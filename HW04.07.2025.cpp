@@ -1,20 +1,66 @@
-﻿// HW04.07.2025.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <vector>
+#include <algorithm>
+#include <windows.h>
+#include "Computer.h"
+using namespace std;
 
-#include <iostream>
+int main() {
+	SetConsoleOutputCP(1251); 
+	SetConsoleCP(1251);
 
-int main()
-{
-    std::cout << "Hello World!\n";
+	vector<Computer> comps;
+	comps.push_back(Computer("Asus", 3.2f, 16, true, 25000));
+	comps.push_back(Computer("HP", 2.4f, 8, false, 18000));
+	comps.push_back(Computer("Lenovo", 1.8f, 4, false, 15000));
+	comps.push_back(Computer("Dell", 3.6f, 32, true, 32000));
+	comps.push_back(Computer("Acer", 2.2f, 16, true, 20000));
+
+	cout << "=== Список комп'ютерів ===\n";
+	for (const auto& comp : comps) comp.show();
+	char search[100];
+	cout << "\nВведіть назву комп'ютера для пошуку: ";
+	cin.getline(search, 100);
+
+	auto found = find_if(comps.begin(), comps.end(), [search](const Computer& c) {
+		return strcmp(c.getName(), search) == 0;
+		});
+	if (found != comps.end()) {
+		cout << "Знайдено:\n";
+		found->show();
+	}
+	else {
+		cout << "Комп'ютер не знайдено.\n";
+	}
+	auto min_freq_it = min_element(comps.begin(), comps.end(), [](const Computer& a, const Computer& b) {
+		return a.getFrequency() < b.getFrequency();
+		});
+	if (min_freq_it != comps.end()) {
+		cout << "\nКомп'ютер з мінімальною частотою:\n";
+		min_freq_it->show();
+		comps.erase(min_freq_it);
+	}
+	cout << "\nПісля видалення мін. частоти:\n";
+	for (const auto& comp : comps) comp.show();
+	int dvd_count = count_if(comps.begin(), comps.end(), [](const Computer& c) {
+		return c.hasDVD();
+		});
+	cout << "\nКількість комп'ютерів з DVD-ROM: " << dvd_count << "\n";
+	for_each(comps.begin(), comps.end(), [](Computer& c) {
+		if (c.getRAM() > 16) {
+			c.setPrice(c.getPrice() + 5000);
+		}
+		});
+	cout << "\nПісля збільшення вартості (RAM > 16):\n";
+	for (const auto& comp : comps) comp.show();
+	sort(comps.begin(), comps.end(), [](const Computer& a, const Computer& b) {
+		return a.getPrice() > b.getPrice();
+		});
+	cout << "\nСортування за спаданням ціни:\n";
+	for (const auto& comp : comps) comp.show();
+	sort(comps.begin(), comps.end(), [](const Computer& a, const Computer& b) {
+		return a.getPrice() < b.getPrice();
+		});
+	cout << "\nСортування за зростанням ціни:\n";
+	for (const auto& comp : comps) comp.show();
+	return 0;
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
